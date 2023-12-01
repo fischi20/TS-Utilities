@@ -1,6 +1,6 @@
 {
   "name": "atsul",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Library with some usefull helper functions to remove the burden of opening up documentation",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
