@@ -1,8 +1,10 @@
 # UTSIL
 
-This library is still in early development and not ready for use.
+This is a small library with various utilities that might come in handy for some specific edge cases or
+for some library development.
+If you want to use decorators, you need to enable decorators in the TS config.
 It's a just for fun project where I tried to make helper functions etc.
-The guards and the Error helpers are very questionable, as of now, I may revamp them in the future.
+The guards and the Error helpers are very questionable, as of now, I may revamp them in the future or drop them.
 
 #### Lib parts
 
@@ -70,6 +72,9 @@ const funcProxy = functionProxyBuilder(func)
 
 There are 8 functions that should help to make decorators easier to write.
 For each decorator there is one with arguments and one without arguments.
+
+Note: If you check the tests for examples, the editor might throw an error and I didn't discover why yet
+It still works in the tests and everywhere. It just displays an error specifically in the test files.
 
 ```ts
 const printClassName = createClassDecoratorWithoutArguments((target) => {
@@ -195,5 +200,15 @@ There are some, maybe or maybe not neat types that also come with this library:
     foo(3); // => true
     foo(4); // => false
     ```
+- Param
+  - Param with it's helper, resolveParam, is a helper for accepting passed parameters (() => T | T)
+  - Example
+    ```ts
+    function foo<T extends number>(param: Param<T>) {
+      return resolveParam(param);
+    }
+    foo(() => 3); // => 3
+    foo(3); // => 3
+    ```
 
-##### Documentation for Guards and Error helpers WIP
+##### Documentation for Guards and Error helpers will be added later since they might get dropped
