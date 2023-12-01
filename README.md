@@ -1,4 +1,4 @@
-# UTSIL
+# ATSUL (Anoying typescript utility library)
 
 This is a small library with various utilities that might come in handy for some specific edge cases or
 for some library development.
