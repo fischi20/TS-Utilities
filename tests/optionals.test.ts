@@ -1,5 +1,7 @@
 import { ok, err, some, none } from '../src/optionals'
 
+
+
 describe('Optional Testing', () => {
     beforeEach(() => {
         opt = some(3)
@@ -181,5 +183,110 @@ describe('Optional Testing', () => {
 })
 
 describe('Result Testing', () => {
+    it('create a result', () => {
+        expect(ok(3)).toEqual(ok(3))
+        expect(err('error')).toEqual(err('error'))
+    })
 
+    it('is ok', () => {
+        expect(ok(3).isOk()).toEqual(true)
+        expect(err('error').isOk()).toEqual(false)
+    })
+    
+    it('is err', () => {
+        expect(ok(3).isErr()).toEqual(false)
+        expect(err('error').isErr()).toEqual(true)
+    })
+
+    it('expect ok', () => {
+        expect(ok(3).expect('error')).toEqual(3)
+        expect(() => err('error').expect('error')).toThrow()
+    })
+
+    it('expect err', () => {
+        expect(() => ok(3).expectErr('error')).toThrow()
+        expect(err('error').expectErr('error')).toEqual('error')
+    })
+
+    it('ok', () => {
+        expect(ok(3).ok()).toEqual(some(3))
+        expect(err('error').ok()).toEqual(none())
+    })
+
+    it('err', () => {
+        expect(ok(3).err()).toEqual(none())
+        expect(err('error').err()).toEqual(some('error'))
+    })
+
+    it('map', () => {
+        expect(ok(3).map((value) => value + 1)).toEqual(ok(4))
+        expect(err('error').map((value) => ""+value)).toEqual(err('error'))
+    })
+
+    it('mapErr', () => {
+        expect(ok(3).mapErr((value) => ""+value)).toEqual(ok(3))
+        expect(err('error').mapErr((value) => value + 1)).toEqual(err('error1'))
+    })
+
+    it('mapOr', () => {
+        expect(ok(3).mapOr((value) => value + 1, 0)).toEqual(4)
+        expect(err('error').mapOr((value) => parseInt(""+value), 0)).toEqual(0)
+    })
+
+    it('inspect', () => {
+        let success_count = 0;
+        const cb = () => {
+            success_count++
+        }
+
+        ok(3).inspect(cb)
+        err('error').inspect(cb)
+
+        expect(success_count).toEqual(1)
+    })
+
+    it('inspectErr', () => {
+        let success_count = 0;
+        const cb = () => {
+            success_count++
+        }
+
+        ok(3).inspectErr(cb)
+        err('error').inspectErr(cb)
+
+        expect(success_count).toEqual(1)
+    })
+
+    it('expectOr', () => {
+        expect(ok(3).expectOr(0)).toEqual(3)
+        expect(err('error').expectOr(0)).toEqual(0)
+    })
+
+    it('and', () => {
+        expect(ok(3).and(ok(4)).expectOr(0)).toEqual(4)
+        expect(ok(3).and(err('error')).expectOr(0)).toEqual(0)
+        expect(err('error').and(ok(4)).expectOr(0)).toEqual(0)
+        expect(err('error').and(err('error')).expectOr(0)).toEqual(0)
+    })
+
+    it('andThen', () => {
+        expect(ok(3).andThen((value) => ok(value + 1)).expectOr(0)).toEqual(4)
+        expect(ok(3).andThen((value) => err('error')).expectOr(0)).toEqual(0)
+        expect(err('error').andThen((value) => ok(4)).expectOr(0)).toEqual(0)
+        expect(err('error').andThen((value) => err('error')).expectOr(0)).toEqual(0)
+    })
+
+    it('or', () => {
+        expect(ok(3).or(ok(4)).expectOr(0)).toEqual(3)
+        expect(ok(3).or(err('error')).expectOr(0)).toEqual(3)
+        expect(err('error').or(ok(4)).expectOr(0)).toEqual(4)
+        expect(err('error').or(err('error')).expectOr(0)).toEqual(0)
+    })
+
+    it('orElse', () => {
+        expect(ok(3).orElse(() => ok(4)).expectOr(0)).toEqual(3)
+        expect(ok(3).orElse(() => err('error')).expectOr(0)).toEqual(3)
+        expect(err('error').orElse(() => ok(4)).expectOr(0)).toEqual(4)
+        expect(err('error').orElse(() => err('error')).expectOr(0)).toEqual(0)
+    })
 })

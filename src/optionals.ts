@@ -1,6 +1,8 @@
 import { inspect } from "util"
 import { Condition, ConditionFunction, Param, ParamFn, checkCondition, resolveParam } from "./types"
 
+//TODO: Improove typing for Result to be more adaptable for the user (unknown is anoying for callback handlers)
+
 export enum OptionType {
     Some,
     None
@@ -229,7 +231,7 @@ export class Result<V, E> {
     }
 
     map<M>(fn: MapFn<V, M>): Result<M, E> {
-        if (this.isErr()) return err<E>(this.value as E)
+        if (this.isErr()) return err<E, M>(this.value as E)
         return ok(fn(this.value as V))
     }
 
@@ -238,7 +240,7 @@ export class Result<V, E> {
     }
 
     mapErr<M>(fn: MapFn<E, M>): Result<V, M> {
-        if (this.isOk()) return ok<V>(this.value as V)
+        if (this.isOk()) return ok<V, M>(this.value as V)
         return err(fn(this.value as E))
     }
 
@@ -254,7 +256,7 @@ export class Result<V, E> {
         }
     }
 
-    expect(message: string) {
+    expect(message?: string) {
         if (this.isErr())
             throw new Error(message)
         return this.value as V
@@ -264,19 +266,19 @@ export class Result<V, E> {
         return this.ok().expectOr(param)
     }
 
-    expectErr(message: string) {
+    expectErr(message?: string) {
         if (this.isOk())
             throw new Error(message)
         return this.value as E
     }
 
-    and(result: Result<V, E>) {
+    and<V2, E2>(result: Result<V2, E2>) {
         if (this.isErr()) return this
         return result
     }
 
     andThen<M>(fn: MapFn<V, Result<M, E>>): Result<M, E> {
-        return this.map(fn).ok().expectOr(err<E>(this.value as E))
+        return this.map(fn).ok().expectOr(err<E, M>(this.value as E))
     }
 
     or(result: Result<V, E>) {
@@ -285,14 +287,14 @@ export class Result<V, E> {
     }
 
     orElse<M>(fn: MapFn<E, Result<V, M>>): Result<V, M> {
-        return this.mapErr(fn).err().expectOr(ok<V>(this.value as V))
+        return this.mapErr(fn).err().expectOr(ok<V, M>(this.value as V))
     }
 }
 
-export function ok<T, E = never>(value: Param<T>) {
+export function ok<T, E = unknown>(value: Param<T>) {
     return new Result<T, E>({ ok: resolveParam(value) })
 }
 
-export function err<T, V = never>(value: Param<T>) {
+export function err<T, V = unknown>(value: Param<T>) {
     return new Result<V, T>({ err: resolveParam(value) })
 }
