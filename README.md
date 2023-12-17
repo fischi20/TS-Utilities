@@ -28,6 +28,14 @@ The general helpers are open for discussion since I'm not sure if I should keep 
 
 - Utility Types
 - Utility Control Flows
+- Options and Results
+
+## Roadmap
+- add JSDocs for simpler use
+- Result better type inference with a few methods
+- consistency between different APIs
+- Simplifying usage of the tools provided by the library
+- not forgetting to update docs the 3. time before pushing to npm :)
 
 ## Usage
 
@@ -211,4 +219,66 @@ There are some, maybe or maybe not neat types that also come with this library:
     foo(3); // => 3
     ```
 
-##### Documentation for Guards and Error helpers will be added later since they might get dropped
+### Option
+Options are a helper type to have a typesafe way to handle nullable types/values.
+The API for it is inspired mainly from the rust Option API and has some minor changes since this is TS and not rust.
+The example below just covers the probably most common methods and uses.
+There are all methods in the tests
+```ts
+  let option = some(3);
+  // type annotation if needed
+  let emptyOption = none<number>();
+  // check for value existence and retrieve value
+  if(option.isSome()){ 
+    let value = option.expect();
+  }
+
+  if(option.isNone()){
+    //throws error with message: error message
+    let value = option.expect("error message") 
+  }
+
+  option.inspect((value) => {
+    //run this function only if the option is not None
+  })
+
+  // maps the value if an option is not None to the new Value/type
+  let newOption = option.map((value) => value.toString())
+
+  // returns the option only if the option is not none and the
+  // filter condition is fullfilled
+  let filteredOption = option.filter((value) => value > 2);
+
+  // sets the new value for option
+  let newVal = option.insert(5); // = 5
+```
+
+### Result
+Similar to Option above, Result is a rust inspired utility type. It also has a similar API to rusts default api.
+This type is somewhat early since the type inference is not ideal for the most part, which is why I'm thinking on how the usage would be easier with less typing.
+The example below just covers the probably most common methods and uses.
+There are all methods in the tests
+```ts
+  let result = ok<number, string>(3)
+
+  // check for result success and retrieve value
+  if(result.isOk()){
+    const value = result.ok() //Option<number>
+  }
+
+  if(result.isErr()){
+    const err = result.err() //Option<string>
+  }
+
+  const mappedResult = result.map((value) => value.toString()) // Result<string, string>
+
+  result.inspect(val => {
+        //run this function only if the result is successfull
+  })
+
+  const value = result.expect("Error if result is not successfull") // = 3
+```
+
+#### Documentation for Guards and Error helpers will be added later since they might get dropped
+
+
