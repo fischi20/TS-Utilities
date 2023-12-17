@@ -44,7 +44,7 @@ export class Option<T> {
         return this.isSome() && checkCondition(fn, this.value!)
     }
 
-    expect(message: string) {
+    expect(message?: string) {
         if (this.isNone())
             throw new Error(message)
         return this.value!
@@ -157,8 +157,12 @@ export class Option<T> {
         if (this.isNone()) return [none(), none()] as any
         
         if (this.value instanceof Array) {
-            const [first, ...rest] = this.value
-            return [some(first), some(rest)] as any
+            if(this.value.length === 2) {
+                const [first, second] = this.value
+                return [some(first), some(second)] as any
+            }
+            const last = this.value.pop()
+            return [some(this.value!), some(last)] as any
         }
 
         return [some(this.value!), none()] as any
@@ -292,9 +296,3 @@ export function ok<T, E = never>(value: Param<T>) {
 export function err<T, V = never>(value: Param<T>) {
     return new Result<V, T>({ err: resolveParam(value) })
 }
-
-const val = some(1).zip(some(true)).zip(some("hello"))
-let val2 = val.unzip()[0].unzip()
-let test = some([1,2,3]).unzip()
-console.log(test);
-console.log(val2);
