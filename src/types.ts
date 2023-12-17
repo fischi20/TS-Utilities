@@ -12,7 +12,7 @@ export type IntRange<F extends number, T extends number> = Exclude<
 
 export type U8 = IntRange<0, 256>;
 
-type ConditionFunction<T> = (value: T) => boolean;
+export type ConditionFunction<T> = (value: T) => boolean;
 export type Condition<T> = T | ConditionFunction<T>;
 
 export type ParamFn<T> = () => T;
